@@ -1,7 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProductoService } from '../../logistica/services/producto.service';
-import { TiendaClientMock } from '../clients/tienda.client.mock';
+import { TiendaService } from '../../identificacion/services/tienda.service';
 import { CreateRegistroVentaDto } from '../dtos/registro-venta/create-registro-venta.dto';
 import { QueryRegistroVentaDto } from '../dtos/registro-venta/query-registro-venta.dto';
 import { UpdateRegistroVentaDto } from '../dtos/registro-venta/update-registro-venta.dto';
@@ -16,7 +16,7 @@ describe('RegistroVentaService', () => {
   let registroRepo: jest.Mocked<RegistroVentaRepository>;
   let itemRepo: jest.Mocked<ItemInventarioRepository>;
   let productoService: jest.Mocked<ProductoService>;
-  let tiendaClient: jest.Mocked<TiendaClientMock>;
+  let tiendaService: jest.Mocked<TiendaService>;
 
   beforeEach(async () => {
     const mockRegistroRepo = {
@@ -34,7 +34,7 @@ describe('RegistroVentaService', () => {
     const mockProductoClient = {
       exists: jest.fn(),
     };
-    const mockTiendaClient = {
+    const mockTiendaService = {
       exists: jest.fn(),
     };
 
@@ -54,8 +54,8 @@ describe('RegistroVentaService', () => {
           useValue: mockProductoClient,
         },
         {
-          provide: TiendaClientMock,
-          useValue: mockTiendaClient,
+          provide: TiendaService,
+          useValue: mockTiendaService,
         },
       ],
     }).compile();
@@ -64,7 +64,7 @@ describe('RegistroVentaService', () => {
     registroRepo = module.get(RegistroVentaRepository);
     itemRepo = module.get(ItemInventarioRepository);
     productoService = module.get(ProductoService);
-    tiendaClient = module.get(TiendaClientMock);
+    tiendaService = module.get(TiendaService);
   });
 
   it('should be defined', () => {
@@ -103,7 +103,7 @@ describe('RegistroVentaService', () => {
       };
 
       productoService.exists.mockResolvedValue(true);
-      tiendaClient.exists.mockResolvedValue(true);
+      tiendaService.exists.mockResolvedValue(true);
       itemRepo.findById.mockResolvedValue(item);
       registroRepo.create.mockResolvedValue(registro);
       itemRepo.decrementCantidad.mockResolvedValue(undefined);
@@ -111,7 +111,7 @@ describe('RegistroVentaService', () => {
       const result = await service.create(dto);
 
       expect(productoService.exists).toHaveBeenCalledWith(dto.productoId);
-      expect(tiendaClient.exists).toHaveBeenCalledWith(dto.tiendaId);
+      expect(tiendaService.exists).toHaveBeenCalledWith(dto.tiendaId);
       expect(itemRepo.findById).toHaveBeenCalledWith(dto.itemInventarioId);
       expect(registroRepo.create).toHaveBeenCalledWith(dto);
       expect(itemRepo.decrementCantidad).toHaveBeenCalledWith(
@@ -157,7 +157,7 @@ describe('RegistroVentaService', () => {
       };
 
       productoService.exists.mockResolvedValue(true);
-      tiendaClient.exists.mockResolvedValue(false);
+      tiendaService.exists.mockResolvedValue(false);
 
       await expect(service.create(dto)).rejects.toThrow(BadRequestException);
     });
@@ -173,7 +173,7 @@ describe('RegistroVentaService', () => {
       };
 
       productoService.exists.mockResolvedValue(true);
-      tiendaClient.exists.mockResolvedValue(true);
+      tiendaService.exists.mockResolvedValue(true);
       itemRepo.findById.mockResolvedValue(null);
 
       await expect(service.create(dto)).rejects.toThrow(BadRequestException);
@@ -202,7 +202,7 @@ describe('RegistroVentaService', () => {
       };
 
       productoService.exists.mockResolvedValue(true);
-      tiendaClient.exists.mockResolvedValue(true);
+      tiendaService.exists.mockResolvedValue(true);
       itemRepo.findById.mockResolvedValue(item);
 
       await expect(service.create(dto)).rejects.toThrow(BadRequestException);
@@ -231,7 +231,7 @@ describe('RegistroVentaService', () => {
       };
 
       productoService.exists.mockResolvedValue(true);
-      tiendaClient.exists.mockResolvedValue(true);
+      tiendaService.exists.mockResolvedValue(true);
       itemRepo.findById.mockResolvedValue(item);
 
       await expect(service.create(dto)).rejects.toThrow(BadRequestException);
@@ -260,7 +260,7 @@ describe('RegistroVentaService', () => {
       };
 
       productoService.exists.mockResolvedValue(true);
-      tiendaClient.exists.mockResolvedValue(true);
+      tiendaService.exists.mockResolvedValue(true);
       itemRepo.findById.mockResolvedValue(item);
 
       await expect(service.create(dto)).rejects.toThrow(BadRequestException);

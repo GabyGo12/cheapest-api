@@ -1,7 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProductoService } from '../../logistica/services/producto.service';
-import { TiendaClientMock } from '../clients';
+import { TiendaService } from '../../identificacion/services/tienda.service';
 import { CreateVentaDto, QueryVentaDto, UpdateVentaDto } from '../dtos';
 import { ItemVenta } from '../repositories/entities/item-venta.entity';
 import { Venta } from '../repositories/entities/venta.entity';
@@ -13,7 +13,7 @@ describe('VentaService', () => {
   let service: VentaService;
   let ventaRepository: jest.Mocked<VentaRepository>;
   let productoExternoRepository: jest.Mocked<ProductoExternoRepository>;
-  let tiendaClient: jest.Mocked<TiendaClientMock>;
+  let tiendaService: jest.Mocked<TiendaService>;
   let productoService: jest.Mocked<ProductoService>;
 
   beforeEach(async () => {
@@ -27,7 +27,7 @@ describe('VentaService', () => {
     const mockProductoExternoRepository = {
       findById: jest.fn(),
     };
-    const mockTiendaClient = {
+    const mockTiendaService = {
       exists: jest.fn(),
     };
     const mockProductoService = {
@@ -46,8 +46,8 @@ describe('VentaService', () => {
           useValue: mockProductoExternoRepository,
         },
         {
-          provide: TiendaClientMock,
-          useValue: mockTiendaClient,
+          provide: TiendaService,
+          useValue: mockTiendaService,
         },
         {
           provide: ProductoService,
@@ -59,7 +59,7 @@ describe('VentaService', () => {
     service = module.get<VentaService>(VentaService);
     ventaRepository = module.get(VentaRepository);
     productoExternoRepository = module.get(ProductoExternoRepository);
-    tiendaClient = module.get(TiendaClientMock);
+    tiendaService = module.get(TiendaService);
     productoService = module.get(ProductoService);
   });
 
@@ -123,13 +123,13 @@ describe('VentaService', () => {
         updatedAt: new Date(),
       };
 
-      tiendaClient.exists.mockResolvedValue(true);
+      tiendaService.exists.mockResolvedValue(true);
       productoExternoRepository.findById.mockResolvedValue({} as any);
       ventaRepository.create.mockResolvedValue(createdVenta);
 
       const result = await service.create(dto);
 
-      expect(tiendaClient.exists).toHaveBeenCalledWith('tienda-1');
+      expect(tiendaService.exists).toHaveBeenCalledWith('tienda-1');
       expect(productoExternoRepository.findById).toHaveBeenCalledTimes(2);
       expect(ventaRepository.create).toHaveBeenCalled();
       expect(result.total).toBe(81.0);
@@ -150,7 +150,7 @@ describe('VentaService', () => {
         ],
       };
 
-      tiendaClient.exists.mockResolvedValue(false);
+      tiendaService.exists.mockResolvedValue(false);
 
       await expect(service.create(dto)).rejects.toThrow(BadRequestException);
       await expect(service.create(dto)).rejects.toThrow(
@@ -172,7 +172,7 @@ describe('VentaService', () => {
         ],
       };
 
-      tiendaClient.exists.mockResolvedValue(true);
+      tiendaService.exists.mockResolvedValue(true);
       productoExternoRepository.findById.mockResolvedValue(null);
 
       await expect(service.create(dto)).rejects.toThrow(BadRequestException);
@@ -219,7 +219,7 @@ describe('VentaService', () => {
         updatedAt: new Date(),
       };
 
-      tiendaClient.exists.mockResolvedValue(true);
+      tiendaService.exists.mockResolvedValue(true);
       productoExternoRepository.findById.mockResolvedValue({} as any);
       productoService.findById.mockResolvedValue({} as any);
       ventaRepository.create.mockResolvedValue(createdVenta);
@@ -245,7 +245,7 @@ describe('VentaService', () => {
         ],
       };
 
-      tiendaClient.exists.mockResolvedValue(true);
+      tiendaService.exists.mockResolvedValue(true);
       productoExternoRepository.findById.mockResolvedValue({} as any);
       productoService.findById.mockRejectedValue(
         new NotFoundException('Producto no encontrado'),

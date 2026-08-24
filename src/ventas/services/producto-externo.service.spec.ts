@@ -1,6 +1,6 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TiendaClientMock } from '../clients';
+import { TiendaService } from '../../identificacion/services/tienda.service';
 import {
   CreateProductoExternoDto,
   QueryProductoExternoDto,
@@ -13,7 +13,7 @@ import { ProductoExternoService } from './producto-externo.service';
 describe('ProductoExternoService', () => {
   let service: ProductoExternoService;
   let repository: jest.Mocked<ProductoExternoRepository>;
-  let tiendaClient: jest.Mocked<TiendaClientMock>;
+  let tiendaService: jest.Mocked<TiendaService>;
 
   beforeEach(async () => {
     const mockRepository = {
@@ -23,7 +23,7 @@ describe('ProductoExternoService', () => {
       update: jest.fn(),
       delete: jest.fn(),
     };
-    const mockTiendaClient = {
+    const mockTiendaService = {
       exists: jest.fn(),
     };
 
@@ -35,15 +35,15 @@ describe('ProductoExternoService', () => {
           useValue: mockRepository,
         },
         {
-          provide: TiendaClientMock,
-          useValue: mockTiendaClient,
+          provide: TiendaService,
+          useValue: mockTiendaService,
         },
       ],
     }).compile();
 
     service = module.get<ProductoExternoService>(ProductoExternoService);
     repository = module.get(ProductoExternoRepository);
-    tiendaClient = module.get(TiendaClientMock);
+    tiendaService = module.get(TiendaService);
   });
 
   it('should be defined', () => {
@@ -69,12 +69,12 @@ describe('ProductoExternoService', () => {
         itemsVenta: [],
       };
 
-      tiendaClient.exists.mockResolvedValue(true);
+      tiendaService.exists.mockResolvedValue(true);
       repository.create.mockResolvedValue(producto);
 
       const result = await service.create(dto);
 
-      expect(tiendaClient.exists).toHaveBeenCalledWith('tienda-1');
+      expect(tiendaService.exists).toHaveBeenCalledWith('tienda-1');
       expect(repository.create).toHaveBeenCalledWith(dto);
       expect(result).toEqual({
         id: 'prod-ext-1',
@@ -101,7 +101,7 @@ describe('ProductoExternoService', () => {
         cantidad: 100,
       };
 
-      tiendaClient.exists.mockResolvedValue(false);
+      tiendaService.exists.mockResolvedValue(false);
 
       await expect(service.create(dto)).rejects.toThrow(BadRequestException);
       await expect(service.create(dto)).rejects.toThrow(
@@ -228,7 +228,7 @@ describe('ProductoExternoService', () => {
       const dto: UpdateProductoExternoDto = { tiendaId: 'tienda-2' };
 
       repository.findById.mockResolvedValue(existingProducto);
-      tiendaClient.exists.mockResolvedValue(false);
+      tiendaService.exists.mockResolvedValue(false);
 
       await expect(service.update('prod-ext-1', dto)).rejects.toThrow(
         BadRequestException,

@@ -1,7 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProductoService } from '../../logistica/services/producto.service';
-import { TiendaClientMock } from '../clients/tienda.client.mock';
+import { TiendaService } from '../../identificacion/services/tienda.service';
 import { CreateItemInventarioDto } from '../dtos/item-inventario/create-item-inventario.dto';
 import { QueryItemInventarioDto } from '../dtos/item-inventario/query-item-inventario.dto';
 import { UpdateItemInventarioDto } from '../dtos/item-inventario/update-item-inventario.dto';
@@ -13,7 +13,7 @@ describe('ItemInventarioService', () => {
   let service: ItemInventarioService;
   let repository: jest.Mocked<ItemInventarioRepository>;
   let productoService: jest.Mocked<ProductoService>;
-  let tiendaClient: jest.Mocked<TiendaClientMock>;
+  let tiendaService: jest.Mocked<TiendaService>;
 
   beforeEach(async () => {
     const mockRepository = {
@@ -26,7 +26,7 @@ describe('ItemInventarioService', () => {
     const mockProductoClient = {
       exists: jest.fn(),
     };
-    const mockTiendaClient = {
+    const mockTiendaService = {
       exists: jest.fn(),
     };
 
@@ -42,8 +42,8 @@ describe('ItemInventarioService', () => {
           useValue: mockProductoClient,
         },
         {
-          provide: TiendaClientMock,
-          useValue: mockTiendaClient,
+          provide: TiendaService,
+          useValue: mockTiendaService,
         },
       ],
     }).compile();
@@ -51,7 +51,7 @@ describe('ItemInventarioService', () => {
     service = module.get<ItemInventarioService>(ItemInventarioService);
     repository = module.get(ItemInventarioRepository);
     productoService = module.get(ProductoService);
-    tiendaClient = module.get(TiendaClientMock);
+    tiendaService = module.get(TiendaService);
   });
 
   it('should be defined', () => {
@@ -77,13 +77,13 @@ describe('ItemInventarioService', () => {
       };
 
       productoService.exists.mockResolvedValue(true);
-      tiendaClient.exists.mockResolvedValue(true);
+      tiendaService.exists.mockResolvedValue(true);
       repository.create.mockResolvedValue(item);
 
       const result = await service.create(dto);
 
       expect(productoService.exists).toHaveBeenCalledWith(dto.productoId);
-      expect(tiendaClient.exists).toHaveBeenCalledWith(dto.tiendaId);
+      expect(tiendaService.exists).toHaveBeenCalledWith(dto.tiendaId);
       expect(repository.create).toHaveBeenCalledWith(dto);
       expect(result).toEqual({
         id: 'item-1',
@@ -122,10 +122,10 @@ describe('ItemInventarioService', () => {
       };
 
       productoService.exists.mockResolvedValue(true);
-      tiendaClient.exists.mockResolvedValue(false);
+      tiendaService.exists.mockResolvedValue(false);
 
       await expect(service.create(dto)).rejects.toThrow(BadRequestException);
-      expect(tiendaClient.exists).toHaveBeenCalledWith(dto.tiendaId);
+      expect(tiendaService.exists).toHaveBeenCalledWith(dto.tiendaId);
     });
   });
 

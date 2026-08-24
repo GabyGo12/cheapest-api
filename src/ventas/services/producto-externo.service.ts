@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { TiendaClientMock } from '../clients';
+import { TiendaService } from '../../identificacion/services/tienda.service';
 import {
   CreateProductoExternoDto,
   ProductoExternoResponseDto,
@@ -17,14 +17,14 @@ import { ProductoExternoRepository } from '../repositories/producto-externo.repo
 export class ProductoExternoService {
   constructor(
     private readonly productoExternoRepository: ProductoExternoRepository,
-    private readonly tiendaClient: TiendaClientMock,
+    private readonly tiendaService: TiendaService,
   ) {}
 
   async create(
     dto: CreateProductoExternoDto,
   ): Promise<ProductoExternoResponseDto> {
     // Validar que la tienda exista
-    const tiendaExists = await this.tiendaClient.exists(dto.tiendaId);
+    const tiendaExists = await this.tiendaService.exists(dto.tiendaId);
     if (!tiendaExists) {
       throw new BadRequestException(`Tienda con id ${dto.tiendaId} no existe`);
     }
@@ -59,7 +59,7 @@ export class ProductoExternoService {
 
     // Si se actualiza el tiendaId, validar que exista
     if (dto.tiendaId && dto.tiendaId !== producto.tiendaId) {
-      const tiendaExists = await this.tiendaClient.exists(dto.tiendaId);
+      const tiendaExists = await this.tiendaService.exists(dto.tiendaId);
       if (!tiendaExists) {
         throw new BadRequestException(
           `Tienda con id ${dto.tiendaId} no existe`,

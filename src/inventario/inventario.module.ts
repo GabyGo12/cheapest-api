@@ -24,11 +24,12 @@ import {
 // Clients Mock
 import { DatabaseModule } from '../datasources/database.module';
 import { LogisticaModule } from '../logistica/logistica.module';
-import { TiendaClientMock } from './clients';
 import { repositoryProviders } from './repositories/repository.providers';
 
+import { IdentificacionModule } from '../identificacion/identificacion.module';
+
 @Module({
-  imports: [DatabaseModule, LogisticaModule],
+  imports: [DatabaseModule, LogisticaModule, IdentificacionModule],
   controllers: [
     ItemInventarioController,
     RegistroVentaController,
@@ -44,8 +45,7 @@ import { repositoryProviders } from './repositories/repository.providers';
     ItemInventarioService,
     RegistroVentaService,
     RegistroCompraService,
-    // Mock Clients
-    TiendaClientMock,
+   
   ],
   exports: [ItemInventarioService, RegistroVentaService, RegistroCompraService],
 })

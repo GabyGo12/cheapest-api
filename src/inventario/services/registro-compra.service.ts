@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ProductoService } from '../../logistica/services/producto.service';
-import { TiendaClientMock } from '../clients/tienda.client.mock';
+import { TiendaService } from '../../identificacion/services/tienda.service';
 import {
   CreateRegistroCompraDto,
   QueryRegistroCompraDto,
@@ -21,7 +21,7 @@ export class RegistroCompraService {
     private readonly registroRepository: RegistroCompraRepository,
     private readonly itemRepository: ItemInventarioRepository,
     private readonly productoService: ProductoService,
-    private readonly tiendaClient: TiendaClientMock,
+    private readonly tiendaService: TiendaService,
   ) {}
 
   async create(
@@ -35,7 +35,7 @@ export class RegistroCompraService {
       );
     }
 
-    const tiendaExists = await this.tiendaClient.exists(dto.tiendaId);
+    const tiendaExists = await this.tiendaService.exists(dto.tiendaId);
     if (!tiendaExists) {
       throw new BadRequestException(`Tienda con id ${dto.tiendaId} no existe`);
     }
