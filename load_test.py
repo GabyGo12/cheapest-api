@@ -19,23 +19,6 @@ PRODUCTOS = [
     "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaab",
     "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaac",
     "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaad",
-    "fe2871d3-e75d-4ac2-84c9-e6a5720df5e6",
-    "431638fd-dc3f-484b-bee5-a6200bc8cc13",
-    "c9fe9a52-b739-4788-b36c-5dc6f1f1081c",
-    "af99c59d-ab06-4379-9bb5-bd562daa5244",
-    "970b8904-82c4-4560-9fc7-47cf11663f6e",
-    "e516d782-6d42-4b0b-b44c-1386a7450f01",
-    "7ec67492-35a3-4e2e-92b3-a98d2ccfc4dd",
-    "d6c1a749-f6cb-4e96-9834-895bf0d709a7",
-    "fc3e0108-8b3b-43a3-945c-16492313d54b",
-    "7faa7b23-5e2a-4655-8e39-9602c0ea517f",
-    "24806355-03ad-4ef1-9c4d-c8495a129474",
-    "c94094e4-4c4c-4486-b081-269384bea25c",
-    "0c677685-2a80-4742-8f47-5a73330025fc",
-    "8dadcbfb-786b-448d-8a15-f83ce1549a69",
-    "572daa06-f65d-4e47-aa9c-416eb5854e48",
-    "9980e428-092a-40b4-b9c9-6b20b0618d95",
-    "63d6ab10-a157-4f38-b44f-3e98ed5bf8ee",
 ]
 
 
@@ -95,10 +78,7 @@ def hacer_request(method, url, archivo, lock):
 
         if not response.ok:
             error = f"HTTP {status_code}"
-            print("\n--- ERROR DEL SERVIDOR ---")
-            print(f"Status: {status_code}")
-            print(f"Respuesta: {response.text[:1000]}")
-            print("--------------------------\n")
+            
 
     except Exception as e:
         error = str(e)
