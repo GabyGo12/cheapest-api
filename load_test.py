@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 import requests
 
 
-BASE_URL = "http://localhost:3000"
+BASE_URL = "http://cheapest-alb-1599766835.us-east-1.elb.amazonaws.com"
 
 TIENDA_ID = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
 MONEDA_ID = "cccccccc-cccc-4ccc-8ccc-cccccccccccc"
@@ -95,6 +95,10 @@ def hacer_request(method, url, archivo, lock):
 
         if not response.ok:
             error = f"HTTP {status_code}"
+            print("\n--- ERROR DEL SERVIDOR ---")
+            print(f"Status: {status_code}")
+            print(f"Respuesta: {response.text[:1000]}")
+            print("--------------------------\n")
 
     except Exception as e:
         error = str(e)
